@@ -4,14 +4,23 @@ const { expect } = require("chai");
 describe("twcTest", function () {
 
     let collateralConfig;
-     //update test
-     
+    let tokenOne;
+
     async function init() {
-        const [owner, otherAccount] = await ethers.getSigners();
+        // CollateralConfig 
         const CollateralConfig = await ethers.getContractFactory("CollateralConfig");
         collateralConfig = await CollateralConfig.deploy();
+
+        //  token one  
+        const TokenOne = await ethers.getContractFactory("TokenOne");
+        tokenOne = await TokenOne.deploy(1000000);
+        
         await collateralConfig.deployed();
+        await tokenOne.deployed();
+
         console.log("collateralConfig contract address:" + collateralConfig.address);
+        console.log("tokenOne contract address:" + tokenOne.address);
+
       }
     
       before(async function () {
@@ -23,7 +32,9 @@ describe("twcTest", function () {
         // address[] calldata _collaterals,
         // uint256[] calldata _MCRs,
         // uint256[] calldata _CCRs 
-        let _collaterals = ["0x0000", "0x0001", "0x0002"];
+
+        //  address array  
+        let _collaterals = [tokenOne.address];
         let _MCRs = [100, 200, 300];
         let _CCRs = [1000, 2000, 3000];
         await collateralConfig.initialize(_collaterals, _MCRs, _CCRs);

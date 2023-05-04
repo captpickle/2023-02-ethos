@@ -2,6 +2,8 @@
 
 pragma solidity 0.6.11;
 
+
+import "hardhat/console.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/SafeERC20.sol";
@@ -18,11 +20,11 @@ contract CollateralConfig is ICollateralConfig, CheckContract, Ownable {
     bool public initialized = false;
 
     // Smallest allowed value for the minimum collateral ratio for individual troves in each market (collateral)
-    uint256 constant public MIN_ALLOWED_MCR = 1.1 ether; // 110%
+    uint256 constant public MIN_ALLOWED_MCR = 1.1 ether; // 110%   // todo  immutable???  uint8 
 
     // Smallest allowed value for Critical system collateral ratio.
     // If a market's (collateral's) total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
-    uint256 constant public MIN_ALLOWED_CCR = 1.5 ether; // 150%
+    uint256 constant public MIN_ALLOWED_CCR = 1.5 ether; // 150%  fixme NC - 150% CCR can be either too low or too high
 
     struct Config {
         bool allowed;
@@ -46,33 +48,35 @@ contract CollateralConfig is ICollateralConfig, CheckContract, Ownable {
     function initialize(
         address[] calldata _collaterals,
         uint256[] calldata _MCRs,
-        uint256[] calldata _CCRs
+        uint256[] calldata _CCRs_CCRs
     ) external override onlyOwner {
-        require(!initialized, "Can only initialize once");
+        require(!initialized, "Can only initialize once");   // gas   
         require(_collaterals.length != 0, "At least one collateral required");
-        require(_MCRs.length == _collaterals.length, "Array lengths must match");
-        require(_CCRs.length == _collaterals.length, "Array lenghts must match");
+        // require(_MCRs.length == _collaterals.length, "Array lengths must match");
+        // require(_CCRs.length == _collaterals.length, "Array lenghts must match");
         
-        for(uint256 i = 0; i < _collaterals.length; i++) {
+        for(uint256 i = 0; i < _collaterals.length; i++) {    // fix 4.3. R - No check unique
             address collateral = _collaterals[i];
+
+            console.log("collateral address :",  collateral);  
             checkContract(collateral);
             collaterals.push(collateral);
 
-            Config storage config = collateralConfig[collateral];
+            Config storage config = collateralConfig[collateral];  // fixme    4.1. L - No check for collateral existence
             config.allowed = true;
             uint256 decimals = IERC20(collateral).decimals();
             config.decimals = decimals;
 
-            require(_MCRs[i] >= MIN_ALLOWED_MCR, "MCR below allowed minimum");
+            // require(_MCRs[i] >= MIN_ALLOWED_MCR, "MCR below allowed minimum");
             config.MCR = _MCRs[i];
 
-            require(_CCRs[i] >= MIN_ALLOWED_CCR, "CCR below allowed minimum");
+            // require(_CCRs[i] >= MIN_ALLOWED_CCR, "CCR below allowed minimum");
             config.CCR = _CCRs[i];
 
             emit CollateralWhitelisted(collateral, decimals, _MCRs[i], _CCRs[i]);
         }
 
-        initialized = true;
+        initialized = true;   //todo delete 
     }
 
     // Admin function to lower the collateralization requirements for a particular collateral.
@@ -92,7 +96,7 @@ contract CollateralConfig is ICollateralConfig, CheckContract, Ownable {
         require(_CCR <= config.CCR, "Can only walk down the CCR");
 
         require(_MCR >= MIN_ALLOWED_MCR, "MCR below allowed minimum");
-        config.MCR = _MCR;
+        config.MCR = _MCR;   // todo gas order
 
         require(_CCR >= MIN_ALLOWED_CCR, "CCR below allowed minimum");
         config.CCR = _CCR;
