@@ -240,6 +240,7 @@ contract LUSDToken is CheckContract, ILUSDToken {
     }
 
     function increaseAllowance(address spender, uint256 addedValue) external override returns (bool) {
+        //todo?? 
         _approve(msg.sender, spender, _allowances[msg.sender][spender].add(addedValue));
         return true;
     }
@@ -251,7 +252,7 @@ contract LUSDToken is CheckContract, ILUSDToken {
 
     // --- EIP 2612 Functionality ---
 
-    function domainSeparator() public view override returns (bytes32) {    
+    function domainSeparator() public view override returns (bytes32) {   
         if (_chainID() == _CACHED_CHAIN_ID) {
             return _CACHED_DOMAIN_SEPARATOR;
         } else {
@@ -318,7 +319,7 @@ contract LUSDToken is CheckContract, ILUSDToken {
     }
 
     function _mint(address account, uint256 amount) internal {
-        assert(account != address(0));
+        assert(account != address(0));    // todo  amount not zero
 
         _totalSupply = _totalSupply.add(amount);
         _balances[account] = _balances[account].add(amount);

@@ -48,9 +48,9 @@ contract CollateralConfig is ICollateralConfig, CheckContract, Ownable {
     function initialize(
         address[] calldata _collaterals,
         uint256[] calldata _MCRs,
-        uint256[] calldata _CCRs_CCRs
+        uint256[] calldata _CCRs
     ) external override onlyOwner {
-        require(!initialized, "Can only initialize once");   // gas   
+        require(!initialized, "Can only initialize once");   // gas
         require(_collaterals.length != 0, "At least one collateral required");
         // require(_MCRs.length == _collaterals.length, "Array lengths must match");
         // require(_CCRs.length == _collaterals.length, "Array lenghts must match");
