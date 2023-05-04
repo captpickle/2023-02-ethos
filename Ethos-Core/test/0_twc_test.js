@@ -4,7 +4,8 @@ const { expect } = require("chai");
 describe("twcTest", function () {
 
     let collateralConfig;
-
+     //update test
+     
     async function init() {
         const [owner, otherAccount] = await ethers.getSigners();
         const CollateralConfig = await ethers.getContractFactory("CollateralConfig");
