@@ -94,6 +94,7 @@ describe("twcTest", function () {
         // uint public totalLQTYStaked;
         let totalstaked =  await  lqtyStaking.totalLQTYStaked(); 
         console.log("totally staked :" +  totalstaked); 
+        await  lqtyStaking.unstake(100000);  
         
 
       }
@@ -114,7 +115,7 @@ describe("twcTest", function () {
         let _CCRs = [1000, 2000, 3000];
         await collateralConfig.initialize(_collaterals, _MCRs, _CCRs);
         let allowedCollaterals = await collateralConfig.getAllowedCollaterals();
-        // console.log("allowedCollaterals:" + allowedCollaterals);  
+        // console.log("allowedCollaterals:" + allowedCollaterals);     
       });
 
 

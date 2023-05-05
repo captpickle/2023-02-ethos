@@ -2,11 +2,12 @@
 
 pragma solidity 0.6.11;
 
+import "hardhat/console.sol";
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/SafeMath.sol";
 import "../Dependencies/Ownable.sol";
 import "../Dependencies/CheckContract.sol";
-import "../Dependencies/console.sol";
+// import "../Dependencies/console.sol";
 import "../Dependencies/IERC20.sol";
 import "../Interfaces/ICollateralConfig.sol";
 import "../Interfaces/ILQTYStaking.sol";
@@ -166,6 +167,12 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         }
 
         emit StakingGainsWithdrawn(msg.sender, LUSDGain, collGainAssets, collGainAmounts);
+        // lusd gain
+        // console.log("lusd gain :: %s ", LUSDGain);  
+        // console.log("collGainAssets gain :: %s ", collGainAssets);
+        // console.log("collGainAmounts gain :: %s ", collGainAmounts[0]);   //todo collGainAmounts 奇怪啊，质押之后解除质押这里的值是0，只有第二次质押才有值么 ？
+
+
 
         // Send accumulated LUSD and ETH gains to the caller
         lusdToken.transfer(msg.sender, LUSDGain);
@@ -178,9 +185,9 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         _requireCallerIsTroveManagerOrActivePool();
         uint collFeePerLQTYStaked;
      
-        if (totalLQTYStaked > 0) {collFeePerLQTYStaked = _collFee.mul(DECIMAL_PRECISION).div(totalLQTYStaked);}
+        if (totalLQTYStaked > 0) {collFeePerLQTYStaked = _collFee.mul(DECIMAL_PRECISION).div(totalLQTYStaked);}      
 
-        F_Collateral[_collateral] = F_Collateral[_collateral].add(collFeePerLQTYStaked);
+        F_Collateral[_collateral] = F_Collateral[_collateral].add(collFeePerLQTYStaked);  // fixme    collFeePerLQTYStaked 特别大的时候为0
         emit F_CollateralUpdated(_collateral, F_Collateral[_collateral]);
     }
 

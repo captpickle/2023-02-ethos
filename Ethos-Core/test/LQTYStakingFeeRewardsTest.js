@@ -73,6 +73,26 @@ contract('LQTYStaking revenue share tests', async accounts => {
     stakingToken = LQTYContracts.stakingToken
     lqtyStaking = LQTYContracts.lqtyStaking
   })
+  
+  // fixme
+  it('does not increase F collateral even with large amount of collateral fee', async () => {
+    await stakingToken.mint(A, dec(10_000_000, 18))
+    await stakingToken.approve(lqtyStaking.address, dec(10_000_000, 18), {from: A})
+    await lqtyStaking.stake(dec(10_000_000, 18), {from: A})
+
+    const wbtc = collaterals[1].address
+    const oldWBTC_FCollateral = await lqtyStaking.F_Collateral(wbtc)
+
+    // .09 WBTC in redemption/collateral fee will not be distributed as reward to stakers
+    await lqtyStaking.increaseF_Collateral(wbtc, dec(9, 6))
+    assert.isTrue(oldWBTC_FCollateral.eq(await lqtyStaking.F_Collateral(wbtc)))
+    
+    // at least 0.1 WBTC in redemption/collateral fee is needed for it to be distributed as reward to stakers
+    await lqtyStaking.increaseF_Collateral(wbtc, dec(1, 7))
+    assert.isTrue(oldWBTC_FCollateral.lt(await lqtyStaking.F_Collateral(wbtc)))
+  })
+
+
 
   it('stake(): reverts if amount is zero', async () => {
     // FF time one year so owner can transfer LQTY
