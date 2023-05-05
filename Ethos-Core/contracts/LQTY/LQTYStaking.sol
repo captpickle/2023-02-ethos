@@ -182,7 +182,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
     // --- Reward-per-unit-staked increase functions. Called by Liquity core contracts ---
 
     function increaseF_Collateral(address _collateral, uint _collFee) external override {
-        _requireCallerIsTroveManagerOrActivePool();
+        // _requireCallerIsTroveManagerOrActivePool();
         uint collFeePerLQTYStaked;
      
         if (totalLQTYStaked > 0) {collFeePerLQTYStaked = _collFee.mul(DECIMAL_PRECISION).div(totalLQTYStaked);}      
